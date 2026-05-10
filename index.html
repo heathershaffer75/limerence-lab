@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Limerence Lab</title>
+  <style>
+    :root {
+      --bg: #f7f1ef;
+      --panel: #fffaf5;
+      --ink: #2d2926;
+      --muted: #6e625d;
+      --accent: #9f5f82;
+      --accent-dark: #6f3f59;
+      --soft-rose: #f0d8e2;
+      --soft-blue: #dfeaf2;
+      --soft-green: #dce9dc;
+      --soft-gold: #f4e7bd;
+      --soft-purple: #e8def0;
+      --soft-red: #efd4d0;
+      --soft-peach: #f4dccb;
+      --shadow: 0 12px 30px rgba(45, 41, 38, 0.12);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Georgia, serif;
+      background: radial-gradient(circle at top left, #fff8ef, var(--bg));
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    header {
+      text-align: center;
+      padding: 42px 20px 26px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      background: var(--soft-rose);
+      color: var(--accent-dark);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 0.82rem;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.3rem, 6vw, 4.5rem);
+      line-height: 1;
+    }
+
+    .subtitle {
+      max-width: 920px;
+      margin: 18px auto 0;
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: var(--muted);
+    }
+
+    .container {
+      width: min(1220px, calc(100% - 30px));
+      margin: 0 auto 42px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      margin-top: 22px;
+    }
+
+    .card {
+      background: rgba(255, 250, 245, 0.96);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(159, 95, 130, 0.18);
+    }
+
+    h2 { margin: 0 0 10px; font-size: 1.65rem; }
+    h3 { margin: 0 0 8px; font-size: 1.15rem; }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 0;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 14px 0 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 14px;
+      cursor: pointer;
+      background: #eadfce;
+      color: var(--ink);
+      font-size: 0.95rem;
+      transition: all 0.15s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button.active { background: var(--accent); color: white; }
+
+    .output {
+      margin-top: 16px;
+      background: white;
+      border: 1px solid rgba(45, 41, 38, 0.12);
+      border-radius: 18px;
+      padding: 16px;
+      min-height: 140px;
+    }
+
+    .pattern-card {
+      border-radius: 18px;
+      padding: 16px;
+      margin-top: 14px;
+      border: 1px solid rgba(45, 41, 38, 0.12);
+      background: var(--soft-rose);
+    }
+
+    .pill {
+      display: inline-block;
+      background: rgba(255,255,255,0.72);
+      color: var(--accent-dark);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.84rem;
+      font-weight: bold;
+      margin: 4px 5px 6px 0;
+      border: 1px solid rgba(159,95,130,0.16);
+    }
+
+    .loop-map {
+      display: grid;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .loop-step {
+      display: grid;
+      grid-template-columns: 145px 1fr;
+      gap: 12px;
+      align-items: center;
+      background: white;
+      border: 1px solid rgba(45,41,38,0.12);
+      border-radius: 18px;
+      padding: 13px;
+    }
+
+    .step-label {
+      font-weight: bold;
+      color: var(--accent-dark);
+    }
+
+    .arrow-down {
+      text-align: center;
+      color: var(--accent-dark);
+      font-weight: bold;
+      font-size: 1.25rem;
+    }
+
+    .meter {
+      height: 26px;
+      border-radius: 999px;
+      background: #e7ddd2;
+      overflow: hidden;
+      margin-top: 18px;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 25%;
+      background: linear-gradient(90deg, #d99ab8, #9f5f82);
+      transition: width 0.25s ease;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid rgba(45, 41, 38, 0.12);
+      border-radius: 16px;
+      padding: 10px;
+      cursor: pointer;
+    }
+
+    .check-pill input { accent-color: var(--accent); }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .compare-box {
+      border-radius: 18px;
+      padding: 16px;
+      border: 1px solid rgba(45,41,38,0.1);
+    }
+
+    .fantasy { background: var(--soft-purple); }
+    .reality { background: var(--soft-green); }
+
+    .tool-card {
+      background: rgba(255,255,255,0.78);
+      border: 1px solid rgba(45,41,38,0.12);
+      border-radius: 16px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+
+    .quote-box {
+      margin-top: 16px;
+      background: var(--soft-gold);
+      border-radius: 18px;
+      padding: 16px;
+      font-weight: bold;
+    }
+
+    ul { margin: 8px 0 0; padding-left: 21px; }
+    li { margin: 6px 0; }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 900px) {
+      .grid, .compare-grid { grid-template-columns: 1fr; }
+      .loop-step { grid-template-columns: 1fr; }
+      .check-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Interactive Recovery Neuroscience</div>
+    <h1>💘 Limerence Lab</h1>
+    <p class="subtitle">Explore why romantic obsession can feel addictive, how uncertainty fuels the brain, and how recovery tools help separate fantasy, attachment panic, dopamine, and reality.</p>
+  </header>
+
+  <main class="container">
+    <section class="grid">
+      <div class="card">
+        <h2>🔎 What Is Limerence Feeding On?</h2>
+        <p class="hint">Choose the experience that feels most active. The goal is not shame, the goal is pattern recognition.</p>
+        <div class="button-row" id="fuelButtons"></div>
+        <div class="pattern-card" id="fuelOutput">
+          <h3>Choose a limerence fuel to begin.</h3>
+          <p>Limerence often intensifies when dopamine, uncertainty, fantasy, attachment wounds, and unmet emotional needs combine.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🔁 The Limerence Loop</h2>
+        <p class="hint">This loop shows how a small signal can become a whole emotional world.</p>
+        <div class="loop-map">
+          <div class="loop-step"><div class="step-label">Cue</div><div>A text, glance, silence, memory, dream, or social media post</div></div>
+          <div class="arrow-down">↓</div>
+          <div class="loop-step"><div class="step-label">Meaning-Making</div><div>The brain starts filling in blanks</div></div>
+          <div class="arrow-down">↓</div>
+          <div class="loop-step"><div class="step-label">Dopamine Chase</div><div>Hope, uncertainty, fantasy, checking, or waiting</div></div>
+          <div class="arrow-down">↓</div>
+          <div class="loop-step"><div class="step-label">Compulsion</div><div>Checking, replaying, imagining, seeking signs, or contacting</div></div>
+          <div class="arrow-down">↓</div>
+          <div class="loop-step"><div class="step-label">Crash</div><div>Anxiety, shame, grief, withdrawal, or renewed craving</div></div>
+        </div>
+        <div class="quote-box">Limerence is not proof of destiny. It may be proof that the brain has found an emotionally loaded reward loop.</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>⚡ Uncertainty Meter</h2>
+        <p class="hint">Check the factors that may be increasing obsession, hope, or emotional intensity.</p>
+        <div class="check-grid" id="uncertaintyList"></div>
+        <div class="meter"><div class="meter-fill" id="uncertaintyFill"></div></div>
+        <div class="output" id="uncertaintyOutput">Select factors to see how uncertainty can intensify limerence.</div>
+      </div>
+
+      <div class="card">
+        <h2>🧠 Fantasy vs Reality Check</h2>
+        <p class="hint">Choose a thought pattern to separate emotional story from observable evidence.</p>
+        <div class="button-row" id="realityButtons"></div>
+        <div class="output" id="realityOutput">Choose a thought pattern to explore.</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>🛠️ Limerence Regulation Tools</h2>
+        <p class="hint">These tools are designed to interrupt checking, fantasy loops, emotional withdrawal, and attachment panic.</p>
+        <div class="button-row" id="toolButtons"></div>
+        <div class="output" id="toolOutput">Choose a regulation tool to begin.</div>
+      </div>
+
+      <div class="card">
+        <h2>🧭 Need Under the Obsession</h2>
+        <p class="hint">Limerence often points toward a real need, even when the fantasy points toward the wrong person or pattern.</p>
+        <div class="button-row" id="needButtons"></div>
+        <div class="output" id="needOutput">Choose an underlying need to explore.</div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:22px;">
+      <h2>⚖️ Fantasy Bond vs Secure Connection</h2>
+      <div class="compare-grid">
+        <div class="compare-box fantasy">
+          <h3>Fantasy Bond / Limerence Pull</h3>
+          <ul>
+            <li>Uncertainty feels like chemistry.</li>
+            <li>Small signals become emotional evidence.</li>
+            <li>Fantasy fills in missing information.</li>
+            <li>The person becomes a symbol of rescue, worth, escape, or validation.</li>
+            <li>Intensity increases when access is inconsistent.</li>
+          </ul>
+        </div>
+        <div class="compare-box reality">
+          <h3>Secure Connection Practice</h3>
+          <ul>
+            <li>Consistency becomes more valuable than intensity.</li>
+            <li>Actions matter more than imagined potential.</li>
+            <li>Needs are named directly rather than hidden inside obsession.</li>
+            <li>Boundaries protect reality from fantasy.</li>
+            <li>The nervous system learns that calm connection can be meaningful.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-box">The goal is not to shame the longing. The goal is to rescue the longing from a loop that cannot truly feed it.</div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>💬 Group Discussion Prompts</h2>
+        <div class="output">
+          <ul>
+            <li>What part of limerence feels most addictive, hope, fantasy, contact, uncertainty, or validation?</li>
+            <li>What need might be hiding under the obsession?</li>
+            <li>What facts do you have, and what blanks is your brain filling in?</li>
+            <li>How does uncertainty affect your nervous system?</li>
+            <li>What does the fantasy version of the person provide that real life currently does not?</li>
+            <li>What boundary would protect your recovery from the loop?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>🧠 Main Recovery Anchor</h2>
+        <div class="output">
+          <p><strong>Limerence is not stupidity, weakness, or moral failure.</strong></p>
+          <p>It can be a powerful brain-body loop involving dopamine, attachment fear, fantasy, emotional deprivation, intermittent reinforcement, and unmet needs.</p>
+          <p>Understanding the loop gives patients more choices: less shame, more reality, safer boundaries, and healthier ways to meet the real need underneath the obsession.</p>
+        </div>
+        <div class="quote-box">The fantasy may be trying to tell you about a real need. The work is learning how to meet that need in reality.</div>
+      </div>
+    </section>
+
+    <div class="footer">Educational tool only. This app is designed for psychoeducation, recovery insight, emotional regulation support, relationship awareness, and group discussion.</div>
+  </main>
+
+  <script>
+    const fuels = {
+      'Uncertainty': {
+        title: 'The Brain Wants the Next Clue',
+        tags: ['Dopamine', 'Hope', 'Checking'],
+        explain: 'Uncertainty can intensify reward-seeking because the brain keeps looking for the next sign, message, look, or shift in tone.',
+        risk: 'The person becomes less like a full human being and more like a slot machine for reassurance or hope.',
+        practice: 'Reduce checking behaviors and ask: What do their consistent actions show over time?'
+      },
+      'Fantasy': {
+        title: 'The Brain Fills in the Blanks',
+        tags: ['Idealization', 'Escape', 'Story-building'],
+        explain: 'Fantasy can create emotional intensity by imagining the version of the person or relationship that would finally make everything feel okay.',
+        risk: 'The imagined relationship may become more rewarding than the real information available.',
+        practice: 'Write two columns: What I know from actions, and what I am imagining from hope.'
+      },
+      'Rejection sensitivity': {
+        title: 'Distance Feels Like Danger',
+        tags: ['Attachment panic', 'Threat system', 'Abandonment fear'],
+        explain: 'When rejection wounds are activated, silence or distance may feel physically urgent and emotionally dangerous.',
+        risk: 'The nervous system may push you toward protest behavior, chasing, testing, or self-abandonment.',
+        practice: 'Regulate the body first, then decide whether contact is wise, necessary, or loop-driven.'
+      },
+      'Intermittent attention': {
+        title: 'Inconsistent Reward Becomes Powerful',
+        tags: ['Intermittent reinforcement', 'Hot/cold', 'Reward chase'],
+        explain: 'Warmth followed by distance can make the next warm moment feel even more valuable because it is unpredictable.',
+        risk: 'The nervous system may confuse relief after deprivation with love or compatibility.',
+        practice: 'Ask: Is this connection consistently nourishing, or is it mostly relief from anxiety?'
+      },
+      'Loneliness': {
+        title: 'The Fantasy Becomes an Emotional Shelter',
+        tags: ['Comfort', 'Escape', 'Longing'],
+        explain: 'When life feels lonely, stressful, or emotionally flat, the fantasy can become a place the mind goes to feel possibility.',
+        risk: 'The fantasy may temporarily soothe loneliness while making real connection feel less accessible.',
+        practice: 'Identify one real-world connection or activity that feeds the same need by 5 percent.'
+      },
+      'Validation hunger': {
+        title: 'Their Attention Becomes Proof of Worth',
+        tags: ['Self-worth', 'Approval', 'Identity'],
+        explain: 'The person may become a symbol of being chosen, special, wanted, attractive, or finally enough.',
+        risk: 'Your worth starts rising and falling based on another person’s availability or response.',
+        practice: 'Ask: What would I need to believe about myself even if this person never validates me?'
+      }
+    };
+
+    const fuelButtons = document.getElementById('fuelButtons');
+    const fuelOutput = document.getElementById('fuelOutput');
+
+    Object.keys(fuels).forEach(key => {
+      const btn = document.createElement('button');
+      btn.textContent = key;
+      btn.addEventListener('click', () => {
+        fuelButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const data = fuels[key];
+        fuelOutput.innerHTML = `
+          <h3>${data.title}</h3>
+          ${data.tags.map(tag => `<span class="pill">${tag}</span>`).join('')}
+          <p><strong>What may be happening:</strong> ${data.explain}</p>
+          <p><strong>Risk:</strong> ${data.risk}</p>
+          <p><strong>Recovery practice:</strong> ${data.practice}</p>
+        `;
+      });
+      fuelButtons.appendChild(btn);
+    });
+
+    const uncertaintyFactors = ['Hot/cold attention', 'Checking social media', 'Unclear relationship status', 'Rare intense contact', 'Dreams or memories', 'No closure', 'Mixed signals', 'Secrecy', 'Physical chemistry', 'Loneliness', 'Stress', 'Low self-worth day'];
+    const uncertaintyList = document.getElementById('uncertaintyList');
+    const uncertaintyFill = document.getElementById('uncertaintyFill');
+    const uncertaintyOutput = document.getElementById('uncertaintyOutput');
+
+    uncertaintyFactors.forEach(factor => {
+      const label = document.createElement('label');
+      label.className = 'check-pill';
+      label.innerHTML = `<input type="checkbox" value="${factor}"> ${factor}`;
+      uncertaintyList.appendChild(label);
+    });
+
+    uncertaintyList.addEventListener('change', () => {
+      const checked = [...uncertaintyList.querySelectorAll('input:checked')].map(input => input.value);
+      const score = Math.min(100, 20 + checked.length * 7);
+      uncertaintyFill.style.width = score + '%';
+
+      if (checked.length === 0) {
+        uncertaintyOutput.innerHTML = 'Select factors to see how uncertainty can intensify limerence.';
+      } else if (checked.length <= 3) {
+        uncertaintyOutput.innerHTML = `<strong>Moderate intensity:</strong><br>${checked.join(', ')}<br><br>Your brain may be looking for meaning, reassurance, or emotional reward.`;
+      } else if (checked.length <= 7) {
+        uncertaintyOutput.innerHTML = `<strong>High intensity:</strong><br>${checked.join(', ')}<br><br>This is where checking, fantasy, and contact urges can become harder to resist. Add structure and reduce cues.`;
+      } else {
+        uncertaintyOutput.innerHTML = `<strong>Loop overload:</strong><br>${checked.join(', ')}<br><br>The nervous system may be treating the person as emotional survival. Focus on no-check windows, support, grounding, and reality-based care.`;
+      }
+    });
+
+    const realityChecks = {
+      'They are my person': 'Slow down the destiny story. What consistent actions show mutual care, availability, respect, and reality-based connection?',
+      'I cannot stop thinking about them': 'Frequency of thought is not proof of compatibility. It may show reinforcement, anxiety, fantasy, or unmet need activation.',
+      'The chemistry means something': 'Chemistry may mean attraction, novelty, danger, familiarity, or nervous system activation. It does not automatically mean safety.',
+      'They gave me a sign': 'Ask whether the sign is clear, direct behavior or something your brain is interpreting because it wants hope.',
+      'No one else will feel this intense': 'That may be true, and it may also be the point. Intensity is not the same as health, safety, or love.',
+      'I just need closure': 'Sometimes closure-seeking becomes another contact loop. Ask what closure would require from reality, not from the other person.'
+    };
+
+    const realityButtons = document.getElementById('realityButtons');
+    const realityOutput = document.getElementById('realityOutput');
+
+    Object.keys(realityChecks).forEach(key => {
+      const btn = document.createElement('button');
+      btn.textContent = key;
+      btn.addEventListener('click', () => {
+        realityButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        realityOutput.innerHTML = `
+          <div class="compare-grid">
+            <div class="compare-box fantasy"><h3>Fantasy Thought</h3><p>${key}</p></div>
+            <div class="compare-box reality"><h3>Reality Check</h3><p>${realityChecks[key]}</p></div>
+          </div>
+          <p><strong>Reflection:</strong> What do their repeated actions show, separate from the emotional intensity?</p>
+        `;
+      });
+      realityButtons.appendChild(btn);
+    });
+
+    const tools = {
+      'No-check window': {
+        bestFor: 'social media checking, waiting for messages, rereading texts',
+        dose: '30 minutes to 24 hours depending on readiness',
+        why: 'Checking keeps the loop alive by giving the brain tiny hits of hope, fear, or new information.',
+        script: 'I am not checking because I am trying to get my brain out of the slot machine cycle.',
+        steps: ['Choose a realistic window.', 'Move the app or mute the cue.', 'Expect discomfort without treating it as danger.', 'Do one replacement action during the urge peak.'],
+        reflection: 'What did checking promise you, and what did not checking give back to you?'
+      },
+      'Facts vs Fantasy list': {
+        bestFor: 'idealization, destiny stories, imagined potential',
+        dose: 'Two columns, 5 minutes',
+        why: 'Writing separates observable reality from the brain’s hope-based storytelling.',
+        script: 'What do I know from behavior, and what am I imagining from longing?',
+        steps: ['Column 1: observable facts.', 'Column 2: imagined meanings.', 'Circle what is repeated behavior.', 'Underline what you are hoping will become true.'],
+        reflection: 'Which column has more evidence? Which column has more emotional charge?'
+      },
+      'Urge surf contact': {
+        bestFor: 'wanting to text, confess, ask, check, explain, or seek reassurance',
+        dose: '10 minutes before contact',
+        why: 'Contact urges rise and fall. Waiting teaches the brain that urgency is not a command.',
+        script: 'I can want contact and still choose whether contact supports my recovery.',
+        steps: ['Write the message in notes.', 'Rate the urge 1 to 10.', 'Wait 10 minutes.', 'Reread and ask if it serves reality or the loop.'],
+        reflection: 'Did the urge change after time, breath, movement, or support?'
+      },
+      'Symbol separation': {
+        bestFor: 'when the person feels like rescue, worth, escape, or destiny',
+        dose: '5 to 10 minutes',
+        why: 'The person may symbolize a real need. Separating symbol from person helps you reclaim the need.',
+        script: 'This person may symbolize something I need, but they are not the only doorway to that need.',
+        steps: ['Ask what the person represents.', 'Name the need underneath.', 'List 3 real-world ways to feed that need.', 'Choose one action not involving the person.'],
+        reflection: 'What need belongs to you, regardless of them?'
+      },
+      'Reality-based boundary': {
+        bestFor: 'mixed signals, inappropriate attachment, unavailable people, repeated destabilization',
+        dose: 'One clear limit',
+        why: 'Boundaries protect the brain from repeated cue exposure and emotional injury.',
+        script: 'This connection is not good for my nervous system, so I am limiting contact/checking/access.',
+        steps: ['Name the destabilizing behavior.', 'Choose a boundary you can actually keep.', 'Remove one cue if possible.', 'Tell support if accountability helps.'],
+        reflection: 'What boundary protects your recovery, not just your pride?'
+      },
+      'Return to self': {
+        bestFor: 'losing identity, obsessing, abandoning routines, emotional withdrawal from real life',
+        dose: 'One self-return action daily',
+        why: 'Limerence shrinks attention around one person. Recovery widens attention back to your life.',
+        script: 'I am allowed to bring my energy back to my own life.',
+        steps: ['Do one neglected routine.', 'Contact one safe person.', 'Move your body.', 'Work on one goal that existed before the obsession.'],
+        reflection: 'What part of you has been waiting for your attention to come back?'
+      }
+    };
+
+    const toolButtons = document.getElementById('toolButtons');
+    const toolOutput = document.getElementById('toolOutput');
+
+    Object.keys(tools).forEach(key => {
+      const btn = document.createElement('button');
+      btn.textContent = key;
+      btn.addEventListener('click', () => {
+        toolButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const data = tools[key];
+        toolOutput.innerHTML = `
+          <div class="tool-card">
+            <h3>${key}</h3>
+            <span class="pill">Best for: ${data.bestFor}</span>
+            <span class="pill">Dose: ${data.dose}</span>
+            <p><strong>Why it helps:</strong> ${data.why}</p>
+            <p><strong>Try saying:</strong> “${data.script}”</p>
+            <strong>Steps:</strong>
+            <ul>${data.steps.map(step => `<li>${step}</li>`).join('')}</ul>
+            <p><strong>Reflection:</strong> ${data.reflection}</p>
+          </div>
+        `;
+      });
+      toolButtons.appendChild(btn);
+    });
+
+    const needs = {
+      'To feel chosen': 'The real need may be worth, belonging, or being valued. Recovery question: How can I practice feeling chosen by my own actions, support system, and values?',
+      'To escape pain': 'The fantasy may be functioning like emotional pain relief. Recovery question: What pain needs care directly instead of being outsourced to fantasy?',
+      'To feel alive': 'The intensity may be replacing numbness or boredom. Recovery question: What safe forms of aliveness can I build into real life?',
+      'To be rescued': 'The person may symbolize rescue from loneliness, stress, shame, or responsibility. Recovery question: What support do I need that does not require someone else to become my solution?',
+      'To repair the past': 'The loop may resemble an old wound trying to get a new ending. Recovery question: What past pain is being reactivated, and what does that part of me need now?',
+      'To feel special': 'The attention may feel like proof of identity or value. Recovery question: What makes me valuable when nobody is choosing, chasing, or validating me?'
+    };
+
+    const needButtons = document.getElementById('needButtons');
+    const needOutput = document.getElementById('needOutput');
+
+    Object.keys(needs).forEach(key => {
+      const btn = document.createElement('button');
+      btn.textContent = key;
+      btn.addEventListener('click', () => {
+        needButtons.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        needOutput.innerHTML = `<strong>${key}</strong><br><br>${needs[key]}<br><br><em>Practice:</em> Name one way to meet 5% of this need in reality today.`;
+      });
+      needButtons.appendChild(btn);
+    });
+  </script>
+</body>
+</html>
